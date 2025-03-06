@@ -25,7 +25,8 @@ In addition, the script logs the output of the compilation in the log files. Ple
 Currently isn't possible to automatize the fw version's increment.
 
 Personally, I search the `EOMTHEEMSAPPLCFG_VERSION_MINOR` in `icub-firmware` folder by Vcode and increment the version and update the date by hand.
-For  AMC I search `constexpr embot::app::icc::Signature signature __attribute__((section(".ARM.__at_0x08100800")))` 
+For AMC I search `theApplication_Config`.
+For  AMC2C I search `constexpr embot::app::icc::Signature signature __attribute__((section(".ARM.__at_0x08100800")))` 
 
 
 ### 🚧 This is the first attempt to automatize the fw compilation. Any suggestions or contributions are welcome!!!!
