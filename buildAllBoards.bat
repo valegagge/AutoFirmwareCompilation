@@ -45,7 +45,7 @@ C:\Keil_v5\UV4\UV4.exe -o %out_path%\amc.log -b %pjoj_AMC_path%
 echo "Compilations Done!!!"
 
 
-COPY %percorso_utente%\icub-firmware\emBODY\eBcode\arch-arm\board\amc\application\bin\*.hex %percorso_utente%\icub-firmware-build\ETH\AMC
+COPY %percorso_utente%\icub-firmware\emBODY\eBcode\arch-arm\board\amc\application\v2\bin\*.hex %percorso_utente%\icub-firmware-build\ETH\AMC
 COPY %percorso_utente%\icub-firmware\emBODY\eBcode\arch-arm\board\ems004\appl\v2\bin\*.hex %percorso_utente%\icub-firmware-build\ETH\EMS\bin\application
 COPY %percorso_utente%\icub-firmware\emBODY\eBcode\arch-arm\board\mc2plus\appl\v2\bin\*.hex %percorso_utente%\icub-firmware-build\ETH\MC2PLUS\bin\application
 COPY %percorso_utente%\icub-firmware\emBODY\eBcode\arch-arm\board\mc4plus\appl\v2\bin\*.hex %percorso_utente%\icub-firmware-build\ETH\MC4PLUS\bin\application
