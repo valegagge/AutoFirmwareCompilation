@@ -15,7 +15,7 @@ The script buildAllBoards.bat compiles the fw of EMS, MC2PLUS, MC4PLUS and AMC a
 > The scripts run the Keil IDE from the default installation location: `C:\Keil_v5\UV4\UV4.exe`
 
 
-The user can specify the path to the `icub-firmware` repo by the option `-b path_to_icub-firmware`.
+The user can specify the path to the `icub-firmware` repo by the option `-p path_to_icub-firmware`.
 
 In addition, the script logs the output of the compilation in the log files. Please check them before pushing the hex files.
 
