@@ -29,11 +29,10 @@ Please check that you provided the _absolute_ correct path
 
 -----------------------------------------
 ## How update the version of each FW
-Currently isn't possible to automate the fw version's increment.
+You can launch `update_version.py` for update the fw version and the build date iteractively.
+See a brief description directly on the [script](https://github.com/valegagge/AutoFirmwareCompilation/blob/c6e38b30b02ec8499204ec5a361216b803e54eab/update_versions.py#L5).
+For run the script you just need to write the command in your bash: `pytho3n update_version.py`.
 
-Personally, I search the `EOMTHEEMSAPPLCFG_VERSION_MINOR` in `icub-firmware` folder by Vcode and increment the version and update the date by hand.
-For AMC I search `theApplication_Config`.
-For  AMC2C I search `constexpr embot::app::icc::Signature signature __attribute__((section(".ARM.__at_0x08100800")))` 
 
 
 ### 🚧 This is the first attempt to automate the fw compilation. Any suggestions or contributions are welcome!!!!
