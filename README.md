@@ -1,38 +1,162 @@
 # AutoFirmwareCompilation
 
-In this repo there are scripts or usefull information for speed up the compilation of the fw of all boards.
+`AutoFirmwareCompilation` is a small set of tools intended to simplify and speed up the firmware development workflow in `icub-firmware`.
 
-## How to use the script `buildAllBoards.bat`
-The script buildAllBoards.bat compiles the fw of EMS, MC2PLUS, MC4PLUS and AMC and copies the hex files in the `icub-firmware-build` folder.
+The tool is a **first step toward a more automated firmware build process**, with the long-term goal of moving part of this workflow to CI and automatically generating firmware executables.
 
-> [!Note]
-> Currently, the AMC board needs two libs to compile by hand(IPAL and HAL). So the script compiles them also.
+## Motivation
 
-> [!Note]
-> The `icub-firmaware` folder and `icub-firmware-build` should stay at the same level as the folder tree.
+A typical firmware development workflow often starts with a change for a single board. However, since several boards share a significant amount of code, a change may require rebuilding multiple firmware targets even when only one board was directly modified.
 
-> [!Note]
-> The scripts run the Keil IDE from the default installation location: `C:\Keil_v5\UV4\UV4.exe`
+In addition, every firmware release requires updating the corresponding version number and build date. Doing this manually means opening several project and source files, changing the metadata, compiling each firmware separately, and finally collecting the generated binaries.
 
+These scripts reduce this manual work by allowing developers to:
 
-The user can specify the _absolute_ path to the `icub-firmware` repo by the option `-p "absolute_path_to_icub-firmware" `.
+- update firmware versions and build dates from a single interface;
+- update multiple boards in the same session;
+- build several firmware targets in sequence;
+- collect the generated `.hex` files;
+- inspect the compilation logs before publishing the generated binaries.
 
-In addition, the script logs the output of the compilation in the log files. Please check them before pushing the hex files.
+This is intentionally an initial implementation. Contributions, fixes, improvements, and ideas are very welcome.
 
+## Location
 
-### Possible errors
-In case the provided path is wrong, the output of the script says something like this
+The `AutoFirmwareCompilation` folder is expected to live inside the `icub-firmware` repository:
+
+```text
+icub-firmware/
+├── AutoFirmwareCompilation/
+│   ├── buildAllBoards.bat
+│   ├── firmware_versions.yaml
+│   └── update_versions.py
+├── emBODY/
+└── ...
 ```
+
+The scripts also support the previous layout where `AutoFirmwareCompilation` and `icub-firmware` were sibling directories, but the layout above is the recommended one.
+
+## Requirements
+
+### Python
+
+The version update script requires Python 3 and PyYAML:
+
+```bash
+pip install pyyaml
+```
+
+### Keil
+
+The firmware build script uses Keil µVision (`UV4.exe`).
+
+The script automatically checks the following common installation locations:
+
+```text
+C:\Keil_v5\UV4\UV4.exe
+%LOCALAPPDATA%\Keil_v5\UV4\UV4.exe
+```
+
+## Updating firmware versions and build dates
+
+Run:
+
+```bash
+python update_versions.py
+```
+
+The script reads the firmware definitions from `firmware_versions.yaml`, displays the current versions found in the source files, and lets you interactively select one or more boards to update.
+
+For each selected board you can update:
+
+- major version;
+- minor version;
+- build date;
+- build time.
+
+The source files are patched automatically and the corresponding values in `firmware_versions.yaml` are kept in sync.
+
+To update the versions and immediately start the firmware build, use:
+
+```bash
+python update_versions.py --build
+```
+
+You can also specify a different YAML registry:
+
+```bash
+python update_versions.py --yaml path/to/firmware_versions.yaml
+```
+
+## Building all supported firmware
+
+Run:
+
+```bat
+buildAllBoards.bat
+```
+
+The script builds the supported firmware targets sequentially using Keil µVision.
+
+At the moment this includes firmware and required libraries for boards such as:
+
+- EMS;
+- MC2PLUS;
+- MC4PLUS;
+- AMC;
+- AMC2C.
+
+Some AMC targets depend on additional libraries such as HAL and IPAL, therefore those libraries are built as part of the process as well.
+
+Compilation output is stored in log files. Please inspect the logs before publishing or distributing the generated firmware binaries.
+
+The generated `.hex` files are copied to the corresponding folders under `icub-firmware-build`.
+
+## Typical workflow
+
+A typical workflow is:
+
+```text
+1. Modify the firmware code.
+2. Run update_versions.py.
+3. Select the firmware targets that need a new version/build date.
+4. Update the versions and dates interactively.
+5. Launch buildAllBoards.bat, or use update_versions.py --build.
+6. Check the compilation logs.
+7. Test and publish the generated firmware binaries.
+```
+
+This avoids manually opening all the affected source/project files just to update version metadata and rebuild related boards.
+
+## Build errors
+
+If a project path is incorrect or Keil cannot open a project, you may see an error such as:
+
+```text
 ERROR: EMS compilation failed with error code 15
 ```
-Please check that you provided the _absolute_ correct path
 
------------------------------------------
-## How update the version of each FW
-You can launch `update_version.py` for update the fw version and the build date iteractively.
-See a brief description directly on the [script](https://github.com/valegagge/AutoFirmwareCompilation/blob/c6e38b30b02ec8499204ec5a361216b803e54eab/update_versions.py#L5).
-For run the script you just need to write the command in your bash: `pytho3n update_version.py`.
+In this case, check:
 
+- that `icub-firmware` is in the expected location;
+- that Keil µVision is installed;
+- that the project files referenced by `buildAllBoards.bat` exist;
+- the corresponding compilation log for additional details.
 
+## Future work
 
-### 🚧 This is the first attempt to automate the fw compilation. Any suggestions or contributions are welcome!!!!
+This tool should be considered a first step toward a more automated firmware generation workflow.
+
+A possible future direction is to move the firmware compilation and artifact generation into CI, reducing the amount of manual work required during firmware development and release preparation.
+
+The current scripts are meant to make the existing workflow faster and less error-prone while providing a practical starting point for that automation.
+
+Contributions, bug fixes, additional board support, and workflow improvements are very welcome.
+
+## Previous version
+
+This tool is an evolution of the original standalone repository:
+
+https://github.com/valegagge/AutoFirmwareCompilation
+
+That repository is expected to be archived/closed and should be considered obsolete once this version is integrated into `icub-firmware`.

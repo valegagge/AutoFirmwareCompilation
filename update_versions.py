@@ -58,8 +58,30 @@ DAY_FROM_NAME = {v: k for k, v in DAY_NAME.items()}
 # ── Path helpers ──────────────────────────────────────────────────────────────
 
 def workspace_root(script_dir: Path) -> Path:
-    """Returns the workspace root = parent of AutoFirmwareCompilation."""
-    return script_dir.parent
+    """
+    Return the workspace root used by paths stored in firmware_versions.yaml.
+
+    Supported layouts:
+
+        WORKSPACE/
+        ├── AutoFirmwareCompilation/
+        └── icub-firmware/
+
+    and:
+
+        WORKSPACE/
+        └── icub-firmware/
+            └── AutoFirmwareCompilation/
+
+    The YAML paths already include the "icub-firmware/" prefix, therefore
+    when this script lives inside icub-firmware we must go up two levels.
+    """
+    parent = script_dir.parent
+
+    if parent.name.lower() == "icub-firmware":
+        return parent.parent
+
+    return parent
 
 
 def version_file_path(board: dict, root: Path) -> Path:

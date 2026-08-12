@@ -2,8 +2,30 @@
 @echo off
 setlocal
 
-:: By default, use parent folder of this script as default_path
-for %%a in ("%~dp0..") do set "default_path=%%~fa"
+:: Determine the workspace root automatically.
+::
+:: Supported layouts:
+::
+::   WORKSPACE\
+::     AutoFirmwareCompilation\
+::     icub-firmware\
+::
+:: and:
+::
+::   WORKSPACE\
+::     icub-firmware\
+::       AutoFirmwareCompilation\
+::
+:: The project paths below already contain the "icub-firmware" component,
+:: therefore default_path must always point to WORKSPACE.
+for %%a in ("%~dp0..") do set "script_parent=%%~fa"
+for %%a in ("%script_parent%") do set "script_parent_name=%%~nxa"
+
+if /I "%script_parent_name%"=="icub-firmware" (
+    for %%a in ("%script_parent%\..") do set "default_path=%%~fa"
+) else (
+    set "default_path=%script_parent%"
+)
 
 if "%~1"=="-p" (
   set "user_path=%~2"
@@ -15,7 +37,7 @@ if "%~1"=="-p" (
 
 :: Automatically detect the UV4.exe out of possible default installation paths
 
-echo Percorso utente usato: %user_path%
+echo User path used: %user_path%
 
 if exist "C:\Keil_v5\UV4\UV4.exe" (
     set "UV4_PATH=C:\Keil_v5\UV4\UV4.exe"
@@ -45,7 +67,7 @@ set "out_path=%CD%"
 
 
 echo EMS compilation starts...
-%UV4_PATH% -o %out_path%\ems.log -j0 -b %pjoj_EMS_path%
+"%UV4_PATH%" -o "%out_path%\ems.log" -j0 -b "%pjoj_EMS_path%"
 set err=%errorlevel%
 if %err%==0 (
     echo EMS compilation successful.
@@ -64,7 +86,7 @@ if %err%==0 (
 
 
 echo MC2PLUS compilation starts...
-%UV4_PATH% -o %out_path%\mc2plus.log -j0 -b %pjoj_MC2PLUS_path%
+"%UV4_PATH%" -o "%out_path%\mc2plus.log" -j0 -b "%pjoj_MC2PLUS_path%"
 set err=%errorlevel%
 if %err%==0 (
     echo MC2PLUS compilation successful.
@@ -82,7 +104,7 @@ if %err%==0 (
 )
 
 echo MC4PLUS compilation starts...
-%UV4_PATH% -o %out_path%\mc4plus.log -j0 -b %pjoj_MC4PLUS_path%
+"%UV4_PATH%" -o "%out_path%\mc4plus.log" -j0 -b "%pjoj_MC4PLUS_path%"
 set err=%errorlevel%
 if %err%==0 (
     echo MC4PLUS compilation successful.
@@ -101,7 +123,7 @@ if %err%==0 (
 
 echo AMC compilation starts...
 echo AMC_LIB compilation starts...
-%UV4_PATH% -o %out_path%\amc_lib.log -j0 -b %pjoj_AMC_LIB_path%
+"%UV4_PATH%" -o "%out_path%\amc_lib.log" -j0 -b "%pjoj_AMC_LIB_path%"
 set err=%errorlevel%
 if %err%==0 (
     echo AMC_LIB compilation successful.
@@ -119,7 +141,7 @@ if %err%==0 (
 )
 
 echo AMC_LIB_IPAL compilation starts...
-%UV4_PATH% -o %out_path%\amc_lib_ipal.log -j0 -b %pjoj_AMC_LIB_IPAL_path%
+"%UV4_PATH%" -o "%out_path%\amc_lib_ipal.log" -j0 -b "%pjoj_AMC_LIB_IPAL_path%"
 set err=%errorlevel%
 if %err%==0 (
     echo AMC_LIB_IPAL compilation successful.
@@ -137,7 +159,7 @@ if %err%==0 (
 )
 
 echo AMC_YRI compilation starts...
-%UV4_PATH% -o %out_path%\amc_yri.log -j0 -b %pjoj_AMC_YRI_path%
+"%UV4_PATH%" -o "%out_path%\amc_yri.log" -j0 -b "%pjoj_AMC_YRI_path%"
 set err=%errorlevel%
 if %err%==0 (
     echo AMC_YRI compilation successful.
@@ -155,7 +177,7 @@ if %err%==0 (
 )
 
 echo AMC2C_LIB compilation starts...
-%UV4_PATH% -o %out_path%\amc2c_lib.log -j0 -b %pjoj_AMC2C_LIB_path%
+"%UV4_PATH%" -o "%out_path%\amc2c_lib.log" -j0 -b "%pjoj_AMC2C_LIB_path%"
 set err=%errorlevel%
 if %err%==0 (
     echo AMC2C_LIB compilation successful.
@@ -173,7 +195,7 @@ if %err%==0 (
 )
 
 echo AMC_MOT compilation starts...
-%UV4_PATH% -o %out_path%\amc_mot.log -j0 -b %pjoj_AMC_MOT_path%
+"%UV4_PATH%" -o "%out_path%\amc_mot.log" -j0 -b "%pjoj_AMC_MOT_path%"
 set err=%errorlevel%
 if %err%==0 (
     echo AMC_MOT compilation successful.
@@ -204,7 +226,7 @@ echo Copy Done!!!
 
 
 
-echo Premere un tasto per continuare...
+echo Press a key to continue...
 pause > nul
 
 endlocal
